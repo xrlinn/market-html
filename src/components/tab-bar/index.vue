@@ -50,6 +50,6 @@ export default {
 
 <style scoped lang="scss">
     .iconfont{
-        font-size: 26px;
+        font-size: 24px;
     }
 </style>

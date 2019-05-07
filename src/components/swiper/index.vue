@@ -1,5 +1,5 @@
 <template>
-  <div class="swiper-container">
+  <div class="swiper">
      <swiper v-if="swiperData.length>1" :options="swiperOption" ref="mySwiper">
     <!-- slides -->
     <swiper-slide v-for="(item, index) in swiperData" :key="index">
@@ -24,14 +24,14 @@ export default {
         // some swiper options/callbacks
         // 所有的参数同 swiper 官方 api 参数
         // ...
-        //可选选项，自动滑动
+        // 可选选项，自动滑动
         autoplay: true,
         // 循环滚动
-        loop : true,
-        //轮播图分页
+        loop: true,
+        // 轮播图分页
         pagination: {
           el: '.swiper-pagination',
-          clickable: true
+          // clickable: true
         }
       },
       swiperData: []
@@ -44,6 +44,7 @@ export default {
   methods: {
     getSwiper () {
       this.$axios.get(this.$api.getSwiper).then(res => {
+        console.log(res)
         this.swiperData = res.data
       })
     }
@@ -67,8 +68,11 @@ export default {
 
 <style scoped lang="scss">
  @import '../../globalCss/px2-rem';
+ .swiper {
+   margin-top: px-to-rem(100);
+ }
  .swiper-container {
-   margin-top: px-to-rem(50);
+   z-index: 0.1;
  }
  .swiper-img-wrap {
     display: block;

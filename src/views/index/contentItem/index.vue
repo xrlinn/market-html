@@ -23,7 +23,7 @@
 export default {
   name: 'contentItem',
   props: {
-    item: Array
+    item: Object
   },
 
   data () {
@@ -45,14 +45,13 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    width: px-to-rem(490);
-    height: px-to-rem(760);
+    width: px-to-rem(244);
+    height: px-to-rem(380);
     .img {
-        height: px-to-rem(490);
+        height: px-to-rem(244);
     }
     .title {
-        // padding-top: px-to-rem(48);
-        width: px-to-rem(390);
+        width: px-to-rem(188);
         overflow:hidden;
         text-overflow: ellipsis;
         display:-webkit-box;
@@ -60,11 +59,9 @@ export default {
         -webkit-line-clamp:2;
     }
     .price-info {
-        width: px-to-rem(432);
+        width: px-to-rem(216);
         display: flex;
         justify-content: space-between;
     }
-
-
 }
 </style>

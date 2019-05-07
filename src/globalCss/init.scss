@@ -1,7 +1,7 @@
 @import './px2-rem.scss';
 body {
     font-size: 14px !important;
-    background: #fff;
+    // background: #fff;
 }
 
 ul{
@@ -36,4 +36,7 @@ a {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+}
+.el-input-number__decrease:hover:not(.is-disabled)~.el-input .el-input__inner:not(.is-disabled), .el-input-number__increase:hover:not(.is-disabled)~.el-input .el-input__inner:not(.is-disabled) {
+  border-color: #DCDFE6 !important;
 }
