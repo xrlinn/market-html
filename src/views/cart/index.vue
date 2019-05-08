@@ -6,8 +6,8 @@
     </div>
     <Loadmore  :bottom-method="loadBottom" :bottom-all-loaded="allLoaded"  ref="loadmore" :auto-fill="false" id="box">
       <div class="content" v-for="(item, index) in contentData" :key="index">
-        <input type="checkbox" class="outerInput"  :value="item" v-model="checkData" v-if="isShow" :key="index" @click="check($event,index)">
-        <contentItems :index="index"  :options="item" @give-value="getvalue"/>
+        <input type="checkbox" class="outerInput"  :value="item" v-model="checkData" v-if="!isShow" :key="index" @click="check($event,index)">
+        <contentItems :index="index"  :options="item"  @give-value="getvalue"/>
       </div>
     </Loadmore>
     <div class="footer" >
@@ -17,7 +17,10 @@
                 <input type="checkbox" id="quan" @click="checkAll($event)">  <span>全选</span> 
             </label>
           </div>
-          <Button @click="handleCount" v-if="!isShow">结算</Button>
+          <div class="count" v-if="!isShow">
+            <span>合计：￥{{this.count}}</span>
+            <Button @click="handleCount">结算</Button>
+          </div>
           <Button @click="handleDelete" v-if="isShow">删除</Button>
           <Button @click="handleCollection" v-if="isShow">移入收藏夹</Button>
     </div>
@@ -46,10 +49,11 @@ export default {
       checkData: [],
       isShow: false,
       text: '管理',
-      arr: {},
-      value: 1,
+      objs: [],
+      nums: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       price: '',
-      index: ''
+      index: '',
+      count: 0
     }
   },
   methods: {
@@ -82,11 +86,15 @@ export default {
     },
     check (e,index) {
       console.log(index)
+      
       if (e.target.checked) {
-        this.price = this.contentData[index].commodity.price
-        this.arr[index] = this.value*this.price
+        this.objs[index] = this.nums[index] * this.contentData[index].commodity.price
+        this.count = this.sum(this.objs)
+      } else {
+        this.objs[index] = 0
+        this.count = this.sum(this.objs)
       }
-      console.log(this.arr)
+      console.log(this.objs);
     },
     checkAll (e) {
       // var box = document.getElementById("box");
@@ -102,6 +110,7 @@ export default {
         })
       } else {
         this.checkData = []
+        this.count = 0
       } 
     },
     handleDelete () {
@@ -140,15 +149,34 @@ export default {
       this.isShow = !this.isShow
       this.text = this.isShow?'完成':'管理'
     },
+    sum(arr) {
+      var s = 0;
+      for (var i=arr.length-1; i>=0; i--) {
+      s += arr[i];
+      }
+      return s;
+    },
     getvalue(value,index){
-      this.value = value;
+      this.nums[index] = value;
       this.index = index
       var box = document.getElementById("box");
       var checkboxs = box.getElementsByClassName('outerInput')
       if (checkboxs[index].checked) {
-        this.arr[index] = this.value*this.contentData[index].commodity.price
+        this.objs[index] = this.nums[index] * this.contentData[index].commodity.price
+        // this.count += this.contentData[index].commodity.price
+        this.count = this.sum(this.objs)
       }
-      console.log(this.arr)
+      console.log(this.objs)
+      // this.contentData.splice(index, 1, {
+      //   ...this.contentData[index],
+      //   num: value
+      // })
+      // this.checkData.splice(index, 1, {
+      //   ...this.checkData[index],
+      //   num: value
+      // })
+      // console.log(this.contentData)
+
     },
   },
   watch: {
@@ -161,7 +189,14 @@ export default {
         }
       },
       deep: true
-    } 
+    },
+    nums: {
+      immediate: true,
+      // deep: true,
+      handler () {
+        console.log('yes')
+      }
+    }
   },
   created () {
     let token = sessionStorage.getItem('token')

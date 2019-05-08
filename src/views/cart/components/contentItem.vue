@@ -25,7 +25,7 @@ export default {
   data () {
       return {
           // value: [],
-          num: 1,
+          num: 1
       }
   },
   components: {
@@ -38,8 +38,8 @@ export default {
   },
   methods: {
     handleChange (value,index) {
-      this.num = value
-      this.$emit("give-value", this.num, index)
+      console.log(value)
+      this.$emit("give-value", value, index)
     }
     // handleDelete (id) {
     //   this.$axios.delete(this.$api.deleteCollection + id).then(res => {
@@ -47,6 +47,15 @@ export default {
     //   })
     // }
   },
+  witch: {
+      options: {
+        immediate: true,
+        deep: true,
+        handler(value){
+          this.num = value.num;
+        }
+      }
+    },
   created () {
     console.log(this.options)
   }
