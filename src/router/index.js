@@ -142,14 +142,6 @@ const router = new Router({
           component: () => import('@/views/collection')
         },
         {
-          path: '/myOrder/:id',
-          name: 'myOrder',
-          meta: {
-            title: '我的订单'
-          },
-          component: () => import('@/views/myOrder')
-        },
-        {
           path: '/trace',
           name: 'trace',
           meta: {
@@ -164,7 +156,66 @@ const router = new Router({
             title: '确认订单'
           },
           component: () => import('@/views/upOrder')
+        },
+        {
+          path: '/order1/:id',
+          name: 'upOrder1',
+          meta: {
+            title: '确认订单'
+          },
+          component: () => import('@/views/upOrder/one')
         }
+      ]
+    },
+    {
+      path: 'layout1',
+      name: 'layout1',
+      redirect: '/one',
+      meta: {
+        title: '我的订单'
+      },
+      component: () => import('@/views/layout1'),
+      children: [
+        {
+          path: '/one',
+          name: 'one',
+          meta: {
+            title: '我的订单'
+          },
+          component: () => import('@/views/layout1/o1'),
+        },
+        {
+          path: '/two',
+          name: 'two',
+          meta: {
+            title: '我的订单'
+          },
+          component: () => import('@/views/layout1/o2'),
+        },
+        {
+          path: '/three',
+          name: 'three',
+          meta: {
+            title: '我的订单'
+          },
+          component: () => import('@/views/layout1/o3'),
+        },
+        {
+          path: '/four',
+          name: 'four',
+          meta: {
+            title: '我的订单'
+          },
+          component: () => import('@/views/layout1/o4'),
+        },
+        {
+          path: '/five',
+          name: 'five',
+          meta: {
+            title: '我的订单'
+          },
+          component: () => import('@/views/layout1/o5'),
+        },
       ]
     },
     {

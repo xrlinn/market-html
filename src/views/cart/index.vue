@@ -6,19 +6,32 @@
     </div>
     <Loadmore  :bottom-method="loadBottom" :bottom-all-loaded="allLoaded"  ref="loadmore" :auto-fill="false" id="box">
       <div class="content" v-for="(item, index) in contentData" :key="index">
-        <input type="checkbox" class="outerInput"  :value="item" v-model="checkData" v-if="!isShow" :key="index" @click="check($event,index)">
-        <contentItems :index="index"  :options="item"  @give-value="getvalue"/>
+        <input type="checkbox" class="outerInput"  :value="item" v-model="checkData"  :key="index" @click="check($event,index)">
+        <div class="commodity">
+            <div class="pic">
+                <img :src="item.commodity.img" alt="">
+            </div>
+            <div class="right">
+                <div class="title">
+                    {{item.commodity.title}}
+                </div>
+                <div class="price">
+                    $<span class="price-info">{{item.commodity.price}}</span>
+                    <input-number :key="index" v-model="item.num" @change="(value) => handleChange(value,index,item.commodity.price)" :min="1" :max="20" label="描述文字"></input-number> 
+                </div>
+            </div>
+        </div>
       </div>
     </Loadmore>
     <div class="footer" >
           <div class="left">
             <label for="quan">
                 <div class="checkbox"></div>
-                <input type="checkbox" id="quan" @click="checkAll($event)">  <span>全选</span> 
+                <input type="checkbox" id="quan" @click="checkAll()" v-model="checkall">  <span>全选</span> 
             </label>
           </div>
           <div class="count" v-if="!isShow">
-            <span>合计：￥{{this.count}}</span>
+            <span>合计：￥{{count}}</span>
             <Button @click="handleCount">结算</Button>
           </div>
           <Button @click="handleDelete" v-if="isShow">删除</Button>
@@ -28,15 +41,15 @@
 </template>
 
 <script>
-import contentItems from './components/contentItem'
 import { Loadmore, Button, Toast } from 'mint-ui'
-
+import {inputNumber} from 'element-ui'
 export default {
   name: 'index',
   components: {
-    contentItems,
     Loadmore,
-    Button
+    Button,
+    inputNumber,
+    Toast
   },
   data () {
     return {
@@ -49,11 +62,10 @@ export default {
       checkData: [],
       isShow: false,
       text: '管理',
-      objs: [],
-      nums: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      price: '',
-      index: '',
-      count: 0
+      count: 0,
+      checkall: false,
+      arr: [],
+      arr1: []
     }
   },
   methods: {
@@ -70,6 +82,18 @@ export default {
             }
             this.contentData = [...this.contentData, ...resData]
             console.log(this.contentData.length)
+            
+            for (let i =0; i<this.contentData.length; i++) {// 初始化商品信息对象
+              var obj = { 
+                'num': 1,
+                'price': 0,
+                'id': ''
+              }
+                obj.num = 1
+                obj.price = this.contentData[i].commodity.price
+                obj.id = this.contentData[i].commodity._id
+                this.arr1.push(obj)
+            }
             resolve()
           })
       })
@@ -85,46 +109,42 @@ export default {
       })
     },
     check (e,index) {
-      console.log(index)
-      
-      if (e.target.checked) {
-        this.objs[index] = this.nums[index] * this.contentData[index].commodity.price
-        this.count = this.sum(this.objs)
-      } else {
-        this.objs[index] = 0
-        this.count = this.sum(this.objs)
-      }
-      console.log(this.objs);
+      setTimeout(() => {
+        this.getCheckPrice1()
+      }, 30)
     },
-    checkAll (e) {
+    checkAll () {
       // var box = document.getElementById("box");
       // var checkboxs = box.getElementsByTagName("input")
-      if (e.target.checked) {
-        this.contentData.forEach((el,i) => {
-          console.log(el)
-          console.log(this.checkData[i])
-          if (this.checkData.indexOf(el) == '-1') {
-            this.checkData.push(el)
-          }
-				  // 数组里没有这一个才push，防止重复push  
-        })
-      } else {
+      var _this = this
+      if (this.checkall) {
         this.checkData = []
         this.count = 0
-      } 
+        } else {
+        console.log(this.arr)
+        this.checkData = []
+        this.contentData.forEach(function (item) {
+          _this.checkData.push(item)
+        })
+        setTimeout(() => {
+        this.getCheckPrice1()
+      }, 30)
+      }
     },
     handleDelete () {
-      for (var i=0; i<this.checkData.length; i++) {
+      for (let i=0; i<this.checkData.length; i++) {
         this.$axios.delete(this.$api.deleteCart + this.checkData[i]._id).then(res => {
            if (res.code === 200) {
               this.contentData = []
+              this.count = 0
               this.getCart()
+              this.$store.dispatch('getUserData')
            }
         })
       }
     },
     handleCollection () {
-      for (var i=0; i<this.checkData.length; i++) {
+      for (let i=0; i<this.checkData.length; i++) {
         this.$axios.post(this.$api.addCollection, {commodityId: this.checkData[i].commodity._id}).then(res => {
           console.log(res)
           if (res.code === 200) {
@@ -143,59 +163,90 @@ export default {
       }
     },
     handleCount () {
-
+      var box = document.getElementById("box");
+      var checkboxs = box.getElementsByClassName('outerInput')
+      for (let i=0; i<checkboxs.length; i++) {
+        if (checkboxs[i].checked) {
+          this.arr1[i].num = this.contentData[i].num
+          this.arr.push(this.arr1[i])
+      } else {
+        for (let j=0; j<this.arr.length; j++) {
+          if (this.arr[j].id === this.contentData[i].id) {
+            this.arr.splice(j,1)
+          }
+        }
+      }
+      }
+      console.log(this.arr)
+      this.$router.push({
+        name: 'upOrder',
+        params: {
+          id: this.arr
+        }
+      })
+      
+      
     },
     handleShow () {
       this.isShow = !this.isShow
       this.text = this.isShow?'完成':'管理'
     },
-    sum(arr) {
-      var s = 0;
-      for (var i=arr.length-1; i>=0; i--) {
-      s += arr[i];
+    handleChange (value,index,price) {
+      console.log(value)
+      console.log(index)
+      console.log(price)
+      // this.checkData.push(this.contentData[index])
+      console.log(this.checkData,"123")
+      console.log(this.contentData,"456")
+      this.$nextTick(() => {
+      
+        this.contentData.splice(index,1, {
+        ...this.contentData[index],
+        num: value,
+        price: price
+      })
+      })
+      if (!this.checkData[index]) {
+        console.log('go')
+      }else {
+        console.log('yes')
+        setTimeout(() => {
+          this.checkData.splice(index,1, {
+          ...this.checkData[index],
+          num: value,
+          price: price
+          })
+          this.getCheckPrice()
+        }, 50);
       }
-      return s;
     },
-    getvalue(value,index){
-      this.nums[index] = value;
-      this.index = index
-      var box = document.getElementById("box");
-      var checkboxs = box.getElementsByClassName('outerInput')
-      if (checkboxs[index].checked) {
-        this.objs[index] = this.nums[index] * this.contentData[index].commodity.price
-        // this.count += this.contentData[index].commodity.price
-        this.count = this.sum(this.objs)
+    getCheckPrice () {
+      var checkprice = 0;
+      for(var i=0; i<this.checkData.length; i++){
+          var item = this.checkData[i];
+          checkprice += item.num * item.price;
       }
-      console.log(this.objs)
-      // this.contentData.splice(index, 1, {
-      //   ...this.contentData[index],
-      //   num: value
-      // })
-      // this.checkData.splice(index, 1, {
-      //   ...this.checkData[index],
-      //   num: value
-      // })
-      // console.log(this.contentData)
-
+      this.count = checkprice.toString().replace(/\B(?=(\d{3})+$)/g,',');
     },
+    getCheckPrice1 () {
+      var checkprice = 0;
+      for(var i=0; i<this.checkData.length; i++){
+          var item = this.checkData[i];
+          checkprice += item.num * item.commodity.price;
+      }
+      this.count = checkprice.toString().replace(/\B(?=(\d{3})+$)/g,',');
+    }
   },
   watch: {
     checkData: { // 监视双向绑定的数组变化
       handler () {
-        if (this.checkData.length == this.contentData.length) {
-          document.querySelector('#quan').checked = true
+        if (this.checkData.length === this.contentData.length) {
+          this.checkall = true
         }else {
-          document.querySelector('#quan').checked = false
+          this.checkall = false
         }
       },
       deep: true
-    },
-    nums: {
-      immediate: true,
-      // deep: true,
-      handler () {
-        console.log('yes')
-      }
     }
   },
   created () {
@@ -204,6 +255,7 @@ export default {
       this.$store.dispatch('getUserData')
     }
     this.getCart()
+     
   },
   computed: {
     userData () {
@@ -240,12 +292,43 @@ export default {
         display: flex;
         align-items: center;
         // margin-top: px-to-rem(40);
+        .commodity {
+        padding: 6px 0;
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border-radius: 10px;
+        .pic {
+          padding: 0 8px;
+          img {
+            height: px-to-rem(260);
+            width: px-to-rem(260);
+          }
+        }
+        .right {
+          display: flex;
+          height: px-to-rem(260);
+          flex-direction: column;
+          justify-content: space-between;
+          .price {
+            text-align: center;
+            padding-bottom: 20px;
+            color: #888;
+            .price-info {
+              font-size: 18px;
+              color: orangered;
+            }
+          }
+        }
+      }
     }
     .footer {
         position: fixed;
         left: 0;
         right: 0;
-        bottom: 60px;
+        z-index: 998;
+        background: #fff;
+        bottom: 55px;
         height: px-to-rem(100);
         display: flex;
         align-items: center;

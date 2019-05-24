@@ -34,7 +34,7 @@
             <div class="header-row2">
                     <div class="collection-item">
                         <div class="title">
-                            {{userData.read || 0}}
+                            {{userData.trace || 0}}
                         </div>
                         <div class="msg">
                             足迹
@@ -152,14 +152,25 @@ export default {
       })
     },
     handleJump3 () {
-      this.$router.push({
-        name: 'myOrder'
-      })
+      if (this.userData.createTime) {
+        this.$router.push({
+          name: 'layout1'
+        })
+      } else {
+        this.$router.push({
+          name: 'login'
+        })
+      }
     },
     handleJump4 () {
       this.$router.push({
         name: 'trace'
       })
+    },
+    getUserData () {
+        this.$axios.get(this.$api.getUserData).then(res => {
+            console.log(res)
+        })
     }
   },
   created () {
@@ -167,6 +178,7 @@ export default {
     if (token) {
       this.$store.dispatch('getUserData')
     }
+    this.getUserData()
   },
   computed: {
     userData () {

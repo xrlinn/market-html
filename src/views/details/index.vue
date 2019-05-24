@@ -91,14 +91,13 @@ export default {
         console.log(res)
         let resData = res.data
         this.commodityData = resData
-        console.log(commodityData)
       })
     },
     handlejump () {
       this.$router.push({
-        name: 'upOrder',
+        name: 'upOrder1',
         params: {
-          id: this.$route.params.id,
+          id: this.$route.params.id
         }
       })
     },

@@ -19,32 +19,32 @@
                 </div>
             </div>
         </div>
-        <div class="middle" v-for="(item,index) in commodityData" :key="index">
+        <div class="middle">
             <div class="bus">
               惠普中国官方旗舰店
             </div>
             <div class="commodity">
                 <div class="pic">
-                    <img :src="item.img" alt="">
+                    <img :src="commodityData.img" alt="">
                 </div>
                 <div class="right">
                     <div class="title">
-                        {{item.title}}
+                        {{commodityData.title}}
                     </div>
                     <div class="price">
-                        $<span class="price-info">{{item.price}} </span>  ×{{item.num}}
+                        $<span class="price-info">{{commodityData.price}} </span>  ×{{num}}
                     </div>
                 </div>
             </div>
-            <div class="bottom" >
-            <span class="totalNum">共{{item.num}}件</span>
-            <span>合计：$ <span class="price-num">{{item.num*item.price}}</span> </span>
+            <div class="counts">
+              <span>购买数量</span>
+              <input-number v-model="num" @change="handleChange" :min="1" :max="20" label="描述文字"></input-number>
             </div>
         </div>
         <div class="footer">
           <div class="left">
-            <span class="totalNum">共{{totalNum}}件</span>
-            <span>合计：$ <span class="price-num">{{totalPrice}}</span> </span>
+            <span>共{{num}}件</span>
+            <span>合计：$ <span class="price-num">{{price*num}}</span> </span>
           </div>
           <Button @click="handleOrder">提交订单</Button>
         </div>
@@ -62,62 +62,75 @@ export default {
   },
   data () {
     return {
-      commodityData: [],
+      commodityData: {},
+      num: 1,
       price: '',
-      totalNum: 0,
-      totalPrice: 0,
-      isShow: false
+      arr: [],
+      obj: {}
     }
   },
   methods: {
     getCommodityData () {
-        const arrId = this.$route.params.id
-        for (let i =0; i<arrId.length; i++) {
-          this.$axios.get(this.$api.getCommodity + arrId[i].id).then(res => {
-          console.log(res)
-          let resData = res.data
-          this.commodityData.push(resData)
-          this.commodityData.splice(i,1,{
-            ...this.commodityData[i],
-            num: arrId[i].num
+      return new Promise(resolve => {
+        const id = this.$route.params.id
+        this.$axios.get(this.$api.getCommodity + id).then(res => {
+        console.log(res)
+        let resData = res.data
+        this.commodityData = resData
+        this.price = resData.price
+        this.obj = {
+        'num': 1,
+        'price': 0,
+        'id': ''
+        }
+        this.obj.num = 1
+        this.obj.price = this.commodityData.price
+        this.obj.id = this.commodityData._id
+        this.arr.push(this.obj)
+          resolve()
           })
-          this.totalNum += arrId[i].num
-          this.totalPrice += arrId[i].num * arrId[i].price
         })
-      }
+      
     },
     handleChange(value) {
       console.log(value)
+      this.obj.num = value
+      this.obj.price = this.commodityData.price
+      this.obj.id = this.commodityData._id
     },
     handleOrder () {
-      const arrId = this.$route.params.id
-      const arr = JSON.stringify(arrId)
+      this.arr.splice(0,1)
+      this.arr.push(this.obj)
+      console.log(this.arr);
+      const arr = JSON.stringify(this.arr)
        MessageBox.confirm('', { 
-        message: '您需支付￥' + this.totalPrice, 
+        message: '您需支付￥' + this.price*this.num, 
         title: '提示', 
         confirmButtonText: '确认付款', 
         cancelButtonText: '取消' 
         }).then(action => { 
         if (action == 'confirm') {     //确认的回调
-        this.$axios.post(this.$api.upOrder,{arr:arr,status:2}).then(res => {
-          if (res.code === 200) {
-            this.$router.push({
-              name: 'three'
-            })
-          }
-        }) 
+          this.$axios.post(this.$api.upOrder,{arr:arr,status:2}).then(res => {
+            if (res.code === 200) {
+              this.$router.push({
+                name: 'three'
+              })
+            }
+          })
         }
         }).catch(err => { 
-        if (err == 'cancel') {     //取消的回调
-        this.$axios.post(this.$api.upOrder,{arr:arr}).then(res => {
-          if (res.code === 200) {
-            this.$router.push({
-              name: 'two'
-            })
-          }
-        })
+        if (err == 'cancel') { //取消的回调
+          this.$axios.post(this.$api.upOrder,{arr:arr}).then(res => {
+            if (res.code === 200) {
+              this.$router.push({
+                name: 'two'
+              })
+            }
+          })
         } 
-      })
+      });
+      
+      
     }
   },
   created () {
@@ -126,9 +139,6 @@ export default {
       this.$store.dispatch('getUserData')
     }
     this.getCommodityData ()
-    this.$axios.get(this.$api.getAllOrder).then(res => {
-        console.log(res)
-      })
     console.log(this.$route.params.id)
   },
   computed: {
@@ -169,7 +179,6 @@ export default {
         }
       }
     }
-
     .middle {
       margin-top: 10px;
       background: #fff;
@@ -202,25 +211,18 @@ export default {
           }
         }
       }
-
-      .bottom {
-          padding-left: 200px;
-          .totalNum {
-            color: #888
-          }
-          .price-num {
-            font-size: 16px;
-            color: orangered;
-          }
-        }
+      .counts {
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
     }
-
     .footer {
         position: fixed;
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 998;
         background: #fff;
         height: px-to-rem(100);
         display: flex;
@@ -228,9 +230,6 @@ export default {
         justify-content: space-between;
         .left {
           padding-left: 100px;
-          .totalNum {
-            color: #888
-          }
           .price-num {
             font-size: 18px;
             color: orangered;
