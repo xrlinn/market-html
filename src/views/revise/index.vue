@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     changeAvatar (url) {
-      this.$axios.put(this.$api.changeUser, {avatar: url}).then(res => {
+      this.$axios.put(this.$api.changeUser, {avatar: url[0]}).then(res => {
         if (res.code === 200) {
           Toast({
             message: '头像修改成功',

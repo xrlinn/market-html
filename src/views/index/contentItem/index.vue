@@ -37,7 +37,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped  lang="scss">
 @import "../../../globalCss/px2-rem";
 .container-left {
     margin-top: 10px;

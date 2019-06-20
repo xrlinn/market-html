@@ -32,6 +32,7 @@ export default {
    data () {
     return {
       contentData: [],
+      title: '水果'
       // queryData: {
       //   pn: 1,
       //   commoditySize: 2,
@@ -43,7 +44,7 @@ export default {
   methods: {
     getContent () {
       return new Promise(resolve => {
-        this.$axios.get(this.$api.getCommodityByCategory + '5cca819121ac6f0d1184fc37' + '/commoditys')
+        this.$axios.post(this.$api.getCommodityByCategory, {title:'水果'})
           .then(res => {
             console.log(res)
             let resData = res.data.commodity
@@ -85,7 +86,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped  lang="scss">
   @import "@/globalCss/px2-rem.scss";
   .container {
     display: flex;
@@ -112,8 +113,10 @@ export default {
             overflow:hidden;
             text-overflow: ellipsis;
             display:-webkit-box;
+            /*! autoprefixer: off */
             -webkit-box-orient:vertical;
             -webkit-line-clamp:2;
+            /*! autoprefixer: on */
           }
           .price-info {
             text-align: center;

@@ -28,21 +28,23 @@
                 <span class="address"><i class="iconfont icon-dizhi"></i>{{commodityData.delivery}}</span>
             </div>
             <div class="content-row1">
-                宝贝评价(12)
+                宝贝评价{{commodityData.comment.length}}
             </div>
-            <div class="content-container">
+            <div class="content-container" v-for="(it,index) in commodityData.comment" :key="index">
                 <div class="avatar">
-                    <img src="" alt="">
+                    <img :src="it.user.avatar" alt="">
                 </div>
                 <div class="right">
                     <div class="usernickname">
-                        张三
+                        {{it.user.usernickname}}
                     </div>
                     <div class="comment">
-                        宝贝好极了了
+                        {{it.text}}
                     </div>
-                    <div class="pic">
-                        <img :src="commodityData.img" alt="">
+                    <div class="pic-wrap">
+                        <div class="pics" v-for="(its,index) in it.img" :key="index">
+                          <img :src="its" alt="">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -109,6 +111,7 @@ export default {
             message: res.msg,
             duration: 1000
           })
+          this.getCommodityData()
         } else {
           Toast({
             message: '您已经收藏过了哦',
@@ -125,9 +128,10 @@ export default {
             message: res.msg,
             duration: 1000
           })
+          this.getCommodityData()
         } else {
           Toast({
-            message: '您已经喜欢过了哦',
+            message: res.msg,
             duration: 1000
           })
         }
@@ -227,10 +231,11 @@ export default {
     .content-container {
         display: flex;
         .avatar {
+          img {
             height: px-to-rem(90);
             width: px-to-rem(90);
-            background: #f00;
             border-radius: 50%
+          }
         }
 
         .right {
@@ -244,13 +249,16 @@ export default {
 
                 padding-left: 28px;
             }
-            .pic {
-                margin-top: 12px;
+            .pic-wrap {
+              display: flex;
+              flex-wrap: wrap;
+              .pics {
+                width: 31%;
+                margin-left: 4px;
                 img {
-                    height: px-to-rem(280);
-                    width: px-to-rem(360);
+                  height: 80px;
                 }
-                
+              }
             }
         }
 

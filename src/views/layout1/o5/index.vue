@@ -43,7 +43,7 @@
               <Button size="small" class="btn2">确认收货</Button>
             </div>
             <div class="btns" v-if="item.status == 4">
-              <Button size="small" class="btn2">评价</Button>
+              <Button size="small" class="btn2" @click="handleComment(item)">评价</Button>
             </div>
         </div>
     </div>
@@ -76,7 +76,6 @@ export default {
             sum += this.orderData[i].commodity[j].num 
             price += this.orderData[i].commodity[j].num * this.orderData[i].commodity[j].price
           }
-          console.log(sum)
           this.orderData.splice(i,1,{
             ...this.orderData[i],
             totalNum: sum,
@@ -84,6 +83,14 @@ export default {
           })
         }
         console.log(this.orderData)
+      })
+    },
+    handleComment (item) {
+      this.$router.push({
+        name: 'comment',
+        params: {
+          orderData: item
+        }
       })
     }
   },

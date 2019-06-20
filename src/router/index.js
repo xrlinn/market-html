@@ -233,6 +233,22 @@ const router = new Router({
         title: '注册'
       },
       component: () => import('@/views/register')
+    },
+    {
+      path: '/comment',
+      name: 'comment',
+      meta: {
+        title: '发表评价'
+      },
+      component: () => import('@/views/comment')
+    },
+    {
+      path: '/searchRes',
+      name: 'searchRes',
+      meta:{
+        title: '搜索结果'
+      },
+      component: () => import('@/views/searchRes')
     }
   ]
 })

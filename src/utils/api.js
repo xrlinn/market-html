@@ -1,7 +1,7 @@
 export default {
   getSwiper: '/swiper', // 获取轮播图
   getAllCommodity: '/commodity', // 
-  getCommodityByCategory: '/category/', // 获取该分类下所有的商品
+  getCommodityByCategory: '/category/commodities', // 获取该分类下所有的商品
   getCommodity: '/commodity/', // 获取单个图书
   login: '/user/login', // 登录接口
   sendCode: '/smsCode', // 发送短信验证码
@@ -27,4 +27,6 @@ export default {
   getOrder4: '/order/status4', // 得到待评价订单
   deleteOrderById: '/order/',
   changeOrderStatus: '/order/',
+  addCommentToCommodity: '/comment',
+  getSearch: '/search'
 }

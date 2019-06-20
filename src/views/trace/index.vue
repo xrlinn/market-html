@@ -57,7 +57,7 @@ export default {
               this.allLoaded = true // 若数据已全部获取完毕
             }
             resData = resData.map(item => {
-              item.updateTime = moment(item.updateTime).format('YYYY年MM月DD日')
+              item.updateTime = moment(item.updateTime).format('YYYY年MM月DD日 HH:mm:ss')
               return item
             })
             this.contentData = [...this.contentData, ...resData]

@@ -19,7 +19,7 @@ export default {
 }
 </script>
 
-<style  lang="scss">
+<style scoped lang="scss">
     .mint-header{
       background: rgba(255,255,255,0.1);
       color: #333333;

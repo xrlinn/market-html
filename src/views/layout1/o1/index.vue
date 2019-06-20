@@ -45,6 +45,9 @@
             <div class="btns" v-if="item.status == 4">
               <Button size="small" class="btn2">评价</Button>
             </div>
+            <div class="btns" v-if="item.status == 5">
+              <Button size="small" class="btn1" @click="deleteOrder(item,index)">取消订单</Button>
+            </div>
         </div>
     </div>
 </template>
@@ -109,7 +112,7 @@ export default {
         if (action == 'confirm') {     //确认的回调
           this.$axios.put(this.$api.changeOrderStatus + id,{status:2}).then(res => {
             if (res.code === 200) {
-               this.getOrder1()
+              this.getOrder1()
               Toast({
                 message: '支付成功',
                 duration: 800

@@ -199,7 +199,6 @@ export default {
       console.log(this.checkData,"123")
       console.log(this.contentData,"456")
       this.$nextTick(() => {
-      
         this.contentData.splice(index,1, {
         ...this.contentData[index],
         num: value,
@@ -286,6 +285,10 @@ export default {
       color: #fff;
       border: none;
     }
+  }
+
+  #box {
+    padding-bottom: 80px;
   }
     
     .content {

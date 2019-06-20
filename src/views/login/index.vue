@@ -58,7 +58,13 @@ export default {
       if (phoneStatus && passwordStatus) {
         this.$axios.post(this.$api.login, this.formData).then(res => {
           console.log(res)
-          if (res.code === 200) {
+          if (res.code === 402) {
+            Toast({
+              message: res.msg,
+              duration: 800
+            })
+          } else {
+            if (res.code === 200) {
             sessionStorage.setItem('token', res.data.token)
             Toast({
               message: '登陆成功',
@@ -74,6 +80,7 @@ export default {
               message: res.msg,
               duration: 1000
             })
+          }
           }
         })
       } else {

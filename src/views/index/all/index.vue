@@ -112,8 +112,10 @@ export default {
             overflow:hidden;
             text-overflow: ellipsis;
             display:-webkit-box;
+            /*! autoprefixer: off */
             -webkit-box-orient:vertical;
             -webkit-line-clamp:2;
+            /*! autoprefixer: on */
           }
           .price-info {
             text-align: center;

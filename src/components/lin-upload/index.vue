@@ -1,6 +1,6 @@
 <template>
     <label class="lin-upload-wrap">
-        <input type="file" class="lin-upload-input" @change="change">
+        <input type="file" class="lin-upload-input" @change="change" multiple>
         <slot></slot>
     </label>
 </template>
@@ -11,7 +11,8 @@ export default {
   name: '',
   data () {
     return {
-      token: ''
+      token: '',
+      url: []
     }
   },
   methods: {
@@ -22,14 +23,18 @@ export default {
       })
     },
     change (evnet) {
-      const file = event.target.files[0]
-      const form = new FormData()
-      form.append('token', this.token)
-      form.append('file', file)
-      axios.post('https://upload-z1.qiniup.com', form).then(res => {
-        console.log(res.data.url)
-        this.$emit('success', res.data.url)
-      })
+      const files = event.target.files
+      for (let i = 0; i<files.length; i++) {
+        const file = files[i]
+        const form = new FormData()
+        form.append('token', this.token)
+        form.append('file', file)
+        axios.post('https://upload-z1.qiniup.com', form).then(res => {
+        this.url.push(res.data.url)
+        this.$emit('success', this.url)
+        })
+      }
+      
     }
   },
   created () {
